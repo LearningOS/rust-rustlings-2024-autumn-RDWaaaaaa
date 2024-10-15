@@ -1,11 +1,11 @@
 /*
-	graph
-	This problem requires you to implement a basic graph functio
+    graph
+    This problem requires you to implement a basic graph functio
 */
-// I AM NOT DONE
 
 use std::collections::{HashMap, HashSet};
 use std::fmt;
+use std::path::is_separator;
 #[derive(Debug, Clone)]
 pub struct NodeNotInGraph;
 impl fmt::Display for NodeNotInGraph {
@@ -30,19 +30,32 @@ impl Graph for UndirectedGraph {
     }
     fn add_edge(&mut self, edge: (&str, &str, i32)) {
         //TODO
+        let (str1, str2, len) = edge;
+        self.add_node(str1);
+        self.add_node(str2);
+        self.adjacency_table
+            .get_mut(str1)
+            .unwrap()
+            .push((str2.to_string(), len));
+        self.adjacency_table
+            .get_mut(str2)
+            .unwrap()
+            .push((str1.to_string(), len));
+    }
+    fn add_node(&mut self, node: &str) -> bool {
+        if self.contains(node) {
+            return false; // 节点已存在，返回 false
+        }
+        self.adjacency_table.insert(node.to_string(), vec![]); // 添加节点
+        true // 添加成功，返回 true
     }
 }
 pub trait Graph {
     fn new() -> Self;
     fn adjacency_table_mutable(&mut self) -> &mut HashMap<String, Vec<(String, i32)>>;
     fn adjacency_table(&self) -> &HashMap<String, Vec<(String, i32)>>;
-    fn add_node(&mut self, node: &str) -> bool {
-        //TODO
-		true
-    }
-    fn add_edge(&mut self, edge: (&str, &str, i32)) {
-        //TODO
-    }
+    fn add_node(&mut self, node: &str) -> bool;
+    fn add_edge(&mut self, edge: (&str, &str, i32));
     fn contains(&self, node: &str) -> bool {
         self.adjacency_table().get(node).is_some()
     }

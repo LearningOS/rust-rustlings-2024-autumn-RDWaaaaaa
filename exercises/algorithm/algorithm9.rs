@@ -1,8 +1,7 @@
 /*
-	heap
-	This question requires you to implement a binary heap function
+    heap
+    This question requires you to implement a binary heap function
 */
-// I AM NOT DONE
 
 use std::cmp::Ord;
 use std::default::Default;
@@ -38,8 +37,21 @@ where
 
     pub fn add(&mut self, value: T) {
         //TODO
+        self.items.push(value); // Add to the end of the list
+        self.count += 1;
+        self.bubble_up(self.count);
     }
-
+    fn bubble_up(&mut self, mut idx: usize) {
+        while idx > 1 {
+            let parent_idx = self.parent_idx(idx); // 先获取父节点索引
+            if (self.comparator)(&self.items[idx], &self.items[parent_idx]) {
+                self.items.swap(idx, parent_idx);
+                idx = parent_idx;
+            } else {
+                break;
+            }
+        }
+    }
     fn parent_idx(&self, idx: usize) -> usize {
         idx / 2
     }
@@ -58,7 +70,37 @@ where
 
     fn smallest_child_idx(&self, idx: usize) -> usize {
         //TODO
-		0
+        let left = self.left_child_idx(idx);
+        let right = self.right_child_idx(idx);
+
+        if right <= self.count && (self.comparator)(&self.items[right], &self.items[left]) {
+            right
+        } else {
+            left
+        }
+    }
+    fn bubble_down(&mut self, mut idx: usize) {
+        while self.children_present(idx) {
+            let smallest_child_idx = self.smallest_child_idx(idx);
+            if (self.comparator)(&self.items[smallest_child_idx], &self.items[idx]) {
+                self.items.swap(idx, smallest_child_idx); // Swap with smaller child
+                idx = smallest_child_idx;
+            } else {
+                break;
+            }
+        }
+    }
+    pub fn remove(&mut self) -> Option<T> {
+        if self.count == 0 {
+            return None;
+        }
+        self.items.swap(1, self.count); // Swap top with last element
+        let result = self.items.pop(); // Pop last element (which was the top)
+        self.count -= 1;
+        if self.count > 0 {
+            self.bubble_down(1); // Restore heap property
+        }
+        result
     }
 }
 
@@ -85,7 +127,7 @@ where
 
     fn next(&mut self) -> Option<T> {
         //TODO
-		None
+        self.remove()
     }
 }
 
